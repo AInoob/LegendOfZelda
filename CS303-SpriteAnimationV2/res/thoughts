@@ -1,0 +1,33 @@
+should it be tile contains where it leads to (done)(actually, no)
+or just some separate containing location and where it leads to(don't need)(done)
+
+map display part of it, and have a position in map,
+or just a list of map connecting to each other? (maybe this)
+
+link has position on map, and display moved position so that if the img of link is
+big, it will still display in the correct area(done, check link.getMovePosX())
+
+the walking up image is not good, i moved it few pixels(done)
+
+link can stay at half block(to-do)
+each half block move require a complete animation of two actions(todo)
+before the action performed, link cannot do anything.(done, check link.readyToAct() and this.animation.isStopped())
+
+To-do: Amplify GUI (done)
+To-do: small pixel matters! (done for now)
+To-do: Turn without move (done)
+To-do: collision&sword(done)
+To-do: animation and move in a short distance---6 move per block(done)
+To-do: Key pressing lock problem(actually it's update delay problem. done)
+To-do: Separate Action class(done)
+To-do: More on animation(kind of, but due to keyPressed, can't be perfect for now)
+To-do: Separate Classes(done for now)
+To-do: monsters(kind of done for now)
+To-do: arrow shoot by link
+To-do: weapon system
+To-do: health system
+To-do: Link attacks and arrows can kill monsters
+To-do: Setting system
+To-do: monsters AI(unnecessary)
+To-do: Dialog system
+To-do: property display
