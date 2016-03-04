@@ -12,7 +12,7 @@ import sprites.Utilities.*;
  * @author jspacco
  *
  */
-public class Link extends Utilities.CreatureBasics implements Utilities.Creature
+public class Link extends CreatureBasics implements Creature
 {
 	// Images for each animation
     private BufferedImage[] walkingLeft = {LinkLoader.GREEN_LEFT2, LinkLoader.GREEN_LEFT1}; 
@@ -32,6 +32,8 @@ public class Link extends Utilities.CreatureBasics implements Utilities.Creature
     private Animation swordRight=new Animation(swordingRight,10);
     private Animation swordUp=new Animation(swordingUp,10);
     private Animation swordDown=new Animation(swordingDown,10);
+    
+    public int swordCooldown=18;
 
     public Link(double x,double y){
     	walkLeft = new Animation(walkingLeft, 1);
@@ -39,8 +41,8 @@ public class Link extends Utilities.CreatureBasics implements Utilities.Creature
         walkUp= new Animation(walkingUp, 1);
         walkDown= new Animation(walkingDown, 1);
     	animationList=new LinkedList<Animation>();
-    	this.posX=x;
-    	this.posY=y;
+    	this.setPosX(x);
+    	this.setPosY(y);
     	animationList.add(walkLeft);
     	animationList.add(walkRight);
     	animationList.add(walkUp);
@@ -73,11 +75,7 @@ public class Link extends Utilities.CreatureBasics implements Utilities.Creature
     public void update() {
     	if(this.swordCooldown>0)
     		this.swordCooldown--;
-        ActionMove aMove=this.action.update();
-        if(aMove!=null){
-        	this.posX+=aMove.x;
-            this.posY+=aMove.y;
-        }
+        super.update();
     }
 	public int getMovePosX() {
 		int i=animationList.indexOf(this.action.animation)*1000+this.action.animation.getCurrentFrame();
@@ -106,8 +104,8 @@ public class Link extends Utilities.CreatureBasics implements Utilities.Creature
 		return r;
 	}
 	public boolean willBeHitBy(Weapon weapon) {
-		for(PairDouble point:weapon.points){
-			if(point.x>this.posX&&point.x<this.posX+width&&point.y>this.posY&&point.y<this.posY+height){
+		for(PairDouble point:weapon.centers){
+			if(point.x>this.getPosX()&&point.x<this.getPosX()+width&&point.y>this.getPosY()&&point.y<this.getPosY()+height){
 				return true;
 			}
 		}
@@ -128,14 +126,15 @@ public class Link extends Utilities.CreatureBasics implements Utilities.Creature
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
 	@Override
-	public int getNextMove() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	@Override
-	public void setNextMove(int nextMove) {
+	public void setInvincible(boolean invincible) {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public boolean invincible() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

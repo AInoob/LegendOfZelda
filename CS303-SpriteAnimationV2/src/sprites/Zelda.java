@@ -32,59 +32,49 @@ import sprites.Utilities.*;
  * 
  * 
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({ "unchecked", "rawtypes","serial","resource" })
 public class Zelda extends JFrame
 {
+	//panel1 is for drawing, panel2 amplify panel1 and display
     private JPanel panel,panel2;
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    //data contains user data, like location.
 	private HashMap<String,String> data=new HashMap();
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+	//teleport contains where a point can teleport link to, teleport is load from map file in getMapArr()
 	private HashMap<PairDouble,MapWithPos> teleport=new HashMap();
     private Link link;
     private Timer timer;
     private MapRoom map;
-    private int [][]mapArr;
-    private int width,height;
-    public JFrame aa=this;
-    private int imageLength=Tile.imageLength();
-    private List<Utilities.Creature> creatures;
-    
-    private final int REFERENCE_SCREEN_HEIGHT = 720;
-    private final int REFERENCE_SCREEN_WIDTH = 1024;
-    
-    
+    private int width,height;//width and height of the panel1
+    public JFrame frame=this;//called by timer, to pack the JFrame, so the size is correspond with panel2
+    private int imageLength=Tile.imageLength();//length of a tile
+    private List<Creature> creatures;//list of creatures, including link and monsters, called when update and paint
+    private final double REFERENCE_SCREEN_WIDTH_RATIO = (double)2/3;//how big the window should be in terms of screenWidth
     private int amplifyIndex=createAmplifyingIndex();
     
-    @SuppressWarnings("resource")
 	public Zelda() throws FileNotFoundException {
-
-    	
-    	
-    	Scanner sData=new Scanner(new File("data"));
-    	while(sData.hasNextLine()){
-    		String line=sData.nextLine();
+    	Scanner linkData=new Scanner(new File("data"));
+    	while(linkData.hasNextLine()){
+    		String line=linkData.nextLine();
     		String [] l=line.split("\\s+");
     		data.put(l[0], l[1]);
     	}
     	link=new Link(Double.parseDouble(data.get("posX")),Double.parseDouble(data.get("posY")));
-    	creatures=new LinkedList<Utilities.Creature>();
+    	creatures=new LinkedList<Creature>();
     	creatures.add(link);
-        mapArr= getMapArr();
-    	map=new MapRoom(mapArr);
-    	width=map.getWidth();
-    	height=map.getHeight();
+        
+    	
         panel=new JPanel() {
             public void paint(Graphics graphics) {
                 Graphics2D g=(Graphics2D)graphics;
-                g.clearRect(0, 0, width, height);
+                //g.clearRect(0, 0, width, height);
                 map.draw(g);
-                for(Utilities.Creature creature:creatures){
+                for(Creature creature:creatures){
                 	BufferedImage image=creature.getImage();
                     g.drawImage(image, (int)(creature.getPosX()*imageLength+creature.getMovePosX()), (int)(creature.getPosY()*imageLength+creature.getMovePosY()), image.getWidth(), image.getHeight(), null);    	
                 }
             }
         };
-        panel.setPreferredSize(new Dimension(width, height));
+
         panel2=new JPanel(){
         	public void paint(Graphics graphics){
         		BufferedImage panelBuffImg=new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
@@ -100,11 +90,9 @@ public class Zelda extends JFrame
         		}
         	}
         };
-        panel2.setPreferredSize(new Dimension(width*amplifyIndex, height*amplifyIndex));
- //       this.getContentPane().add(panel, BorderLayout.WEST);
         this.getContentPane().add(panel2, BorderLayout.CENTER);
         this.setResizable(true);
-        this.pack();
+        loadMap();
         this.setLocation(100,100);
         
         addWindowListener(new WindowAdapter() {
@@ -128,22 +116,21 @@ public class Zelda extends JFrame
         timer.start();
         
     }
-    
-    
-    
-    @SuppressWarnings({ "rawtypes", "resource" })
-	private int[][] getMapArr() throws FileNotFoundException {
+
+	private void loadMap() throws FileNotFoundException {
 		Scanner mapScanner=new Scanner(new File("res/"+data.get("map")));
 		List<List>mapList=new ArrayList<List>();
-		boolean inProperty=false;
+		boolean inProferLines=false;
+		creatures.clear();//remove all creatures from last map
+		creatures.add(link);
 		while(mapScanner.hasNextLine()){
 			String line=mapScanner.nextLine();
+			//AInoob is the separation between map blocks data and other things
 			if(line.equals("AInoob")){
-				inProperty=true;
+				inProferLines=true;
 				line=mapScanner.nextLine();
 			}
-			
-			if(!inProperty){
+			if(!inProferLines){
 				ArrayList<Integer>row=new ArrayList<Integer>();
 				String []blocks=line.split("\\s+");
 				for(String block:blocks){
@@ -156,27 +143,27 @@ public class Zelda extends JFrame
 				switch(blocks[0]){
 					case "tele":		teleport.put(new PairDouble(Integer.parseInt(blocks[1]),Integer.parseInt(blocks[2])), new MapWithPos(blocks[3],Integer.parseInt(blocks[4]),Integer.parseInt(blocks[5])));
 										break;
-					case "MonsterA":	creatures.add(new Utilities.MonsterA(Double.parseDouble(blocks[1]),Double.parseDouble(blocks[2]),Integer.parseInt(blocks[3])));
+					case "MonsterA":	creatures.add(new MonsterA(Double.parseDouble(blocks[1]),Double.parseDouble(blocks[2]),Integer.parseInt(blocks[3])));
 										break;
 				}
 				
 			}
 		}
 		int mapArr[][];
-		mapArr=new int[mapList.size()][];
+		mapArr=new int[mapList.get(0).size()][];
 		for(int i=0;i<mapArr.length;i++){
-			mapArr[i]=new int[mapList.get(i).size()];
+			mapArr[i]=new int[mapList.size()];
 			for(int j=0;j<mapArr[i].length;j++){
-				mapArr[i][j]=(int) mapList.get(i).get(j);
+				mapArr[i][j]=(int) mapList.get(j).get(i);
 			}
 		}
-		int[][]reverseMapArr=new int[mapArr[0].length][mapArr.length];
-		for(int i=0;i<mapArr.length;i++){
-			for(int j=0;j<mapArr[0].length;j++){
-				reverseMapArr[j][i]=mapArr[i][j];
-			}
-		}
-		return reverseMapArr;
+		map=new MapRoom(mapArr);
+    	width=map.getWidth();
+    	height=map.getHeight();
+    	panel.setPreferredSize(new Dimension(width, height));
+    	panel2.setPreferredSize(new Dimension(width*amplifyIndex, height*amplifyIndex));
+    	frame.pack();
+		return ;
 	}
 
 
@@ -186,15 +173,15 @@ public class Zelda extends JFrame
             @Override
             public void keyPressed(KeyEvent e) {
                 // if link is not in move, get the new move
-            	if(link.readyToAct()){            		
+            	if(link.readyToAct()&&link.noNextMoves()){            		
                     if (e.getKeyChar()=='a'||e.getKeyCode()==KeyEvent.VK_LEFT) {
-                        goDirection(link,0);
+                    	link.setNextMove(2);
                     } else if (e.getKeyChar()=='s'||e.getKeyCode()==KeyEvent.VK_DOWN) {
-                    	goDirection(link,1);
+                    	link.setNextMove(1);
                     } else if (e.getKeyChar()=='d'||e.getKeyCode()==KeyEvent.VK_RIGHT) {
-                    	goDirection(link,2);
+                    	link.setNextMove(3);
                     } else if (e.getKeyChar()=='w'||e.getKeyCode()==KeyEvent.VK_UP) {
-                    	goDirection(link,3);
+                    	link.setNextMove(0);
                     } else if(e.getKeyChar()=='j'){
                     	//System.out.println("sword");
                     	link.attack();
@@ -205,53 +192,16 @@ public class Zelda extends JFrame
             }
         });
     }
-	
-	private void goDirection(Utilities.Creature creature,int direction){
-		switch(direction){
-		case 0: 
-			if(ableToMove(creature.getBlocks(-1, 0))){
-	        	//System.out.println("left");
-				creature.left();
-	        }
-	        else{
-	        	creature.turnLeft();
-	        	//System.out.println("unable to move");
-	        }
-			break;
-		case 1: 
-			if(ableToMove(creature.getBlocks(0, 1))){
-			   	//System.out.println("down");
-				creature.down();
-	        }
-	        else{
-	        	creature.turnDown();
-	        	//System.out.println("unable to move");
-	        }
-			break;
-		case 2:
-			if(ableToMove(creature.getBlocks(1, 0))){
-            	//System.out.println("right");
-				creature.right();
-            }
-            else{
-            	creature.turnRight();
-            	//System.out.println("unable to move");
-            }
-			break;
-		case 3:
-			if(ableToMove(creature.getBlocks(0, -1))){
-            	//System.out.println("up");
-				creature.up();
-            }
-            else{
-            	creature.turnUp();
-            	//System.out.println("unable to move");
-            }
-			break;
-		default: System.err.println("Wut?! 111");
-		}
+	//decide whether the creature move or just turn
+	private void goDirection(Creature creature,int direction){
+		if(ableToMove(creature.getBlocks(direction))){
+			creature.goDirection(direction);
+        }
+        else{
+        	creature.turnDirection(direction);
+        }
 	}
-    
+    //check whether the given blocks are passable or not
     private boolean ableToMove(List<PairInt> blocks) {
     	for(PairInt block:blocks){
     		if(!map.isPassable(block.x, block.y)){
@@ -266,12 +216,13 @@ public class Zelda extends JFrame
 	private void createTimer() {
         // Create timer for animation
         timer = new Timer(22, new ActionListener() {
-            @Override
+        	
             public void actionPerformed(ActionEvent e) {
-                //generationLabel.setText("Generation: "+ generation);
-                //System.out.println("timer");
-            	for(Utilities.Creature creature: creatures){
+            	//System.out.println("timer "+link.action.restFrames+" "+link.readyToAct()+" "+link.swordCooldown);
+            	//update every state of creature (animation, nextMove, etc)
+            	for(Creature creature: creatures){
             		creature.update();
+            		//if the creature just finish a move, round the number to a.5 or a.0
             		if(creature.readyToAct()){
                 		double tempX=creature.getPosX(),tempY=creature.getPosY();
         				//round to x.0 or x.5
@@ -283,33 +234,61 @@ public class Zelda extends JFrame
         					tempY=((int)(tempY*2+0.2))/(double)2;
         					creature.setPosY(tempY);
         				}
-        				if((!(creature instanceof Link))&&creature.getNextMove()!=-1){
-                			goDirection(creature,creature.getNextMove());
-                			creature.setNextMove(-1);
+        				//check if link hit any monster
+        				if(!(creature instanceof Link)){
+        					if((!link.invincible())&&(!creature.invincible())&&Math.abs(creature.getPosX()-link.getPosX())<0.51&&Math.abs(creature.getPosY()-link.getPosY())<0.51){
+        						if(link.getPosX()==creature.getPosX()){
+        							if(link.getPosY()<creature.getPosY()){
+        								creature.fallBack(1);
+                						link.fallBack(0);
+        							}
+        							else if(link.getPosY()>creature.getPosY()){
+        								creature.fallBack(0);
+                						link.fallBack(1);
+        							}
+        							else{
+            							creature.fallBack(link.facing);
+                						link.fallBack();
+            						}
+        						}
+        						else if(link.getPosY()==creature.getPosY()){
+        							if(link.getPosX()>creature.getPosX()){
+        								creature.fallBack(2);
+                						link.fallBack(3);
+        							}
+        							else if(link.getPosX()<creature.getPosX()){
+        								creature.fallBack(3);
+                						link.fallBack(2);
+        							}
+        							else{
+            							creature.fallBack(link.facing);
+                						link.fallBack();
+            						}
+        						}
+        					}
                 		}
                 	}
+            		if(creature.readyToAct()){
+            			//if it's a monster and the monster has next move, go for it
+        				if(creature.peekNextMove()!=-1){
+                			goDirection(creature,creature.getNextMove());
+                		}
+            		}
             	}
-            	
+            	//if link is at a teleport place, teleport link
             	PairDouble temp=new PairDouble(link.getPosX(),link.getPosY());
-//            	System.out.println(link.getPosX()+" "+link.getPosY());
                 if(teleport.containsKey(temp)){
                 	MapWithPos temp2=teleport.get(temp);
                 	teleport.clear();
                 	data.put("map", temp2.map);
                 	try {
-						mapArr= getMapArr();
+						loadMap();
+						link.setPosX(temp2.x);
+	                	link.setPosY(temp2.y);
 					} catch (FileNotFoundException e2) {
 						// TODO Auto-generated catch block
 						e2.printStackTrace();
 					}
-                	map=new MapRoom(mapArr);
-                	width=map.getWidth();
-                	height=map.getHeight();
-                	panel.setPreferredSize(new Dimension(width, height));
-                	panel2.setPreferredSize(new Dimension(width*amplifyIndex, height*amplifyIndex));
-                	link.setPosX(temp2.x);
-                	link.setPosY(temp2.y);
-                	aa.pack();
                 }
                 panel.repaint();
                 panel2.repaint();
@@ -326,12 +305,7 @@ public class Zelda extends JFrame
 	public int createAmplifyingIndex(){
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 	    double screenWidth = screenSize.getWidth();
-	    double screenHeight = screenSize.getHeight();
-	    
-//	    System.out.println(screenWidth);
-//	    System.out.println(screenHeight);
-	    
-	    return 3 * (int) Math.min(screenWidth/REFERENCE_SCREEN_WIDTH, screenHeight/REFERENCE_SCREEN_HEIGHT);
+	    return (int)(screenWidth*REFERENCE_SCREEN_WIDTH_RATIO/(16*16));
 	}
 	
     public static void main(String[] args) throws Exception {
