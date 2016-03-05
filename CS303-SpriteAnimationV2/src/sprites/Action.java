@@ -1,9 +1,12 @@
 package sprites;
+
+import java.awt.image.BufferedImage;
+
 //including animation and ActionMove
 public class Action {
-	public Animation animation=null;
-	public int restFrames,frameDelay,frameCount=0,animationDelay,animationCount=0;
-	public double x,y;
+	private Animation animation=null;
+	private int restFrames,frameDelay,frameCount=0,animationDelay,animationCount=0;
+	private double x,y;
 	public void change(Animation animation, int restFrames,int frameDelay,double x,double y,int animationDelay){
 		this.animation=animation;
 		this.restFrames=restFrames;
@@ -13,6 +16,9 @@ public class Action {
 		this.animationDelay=animationDelay;
 		this.frameCount=0;
 		this.animationCount=0;
+	}
+	public void changeAnimation(Animation animation){
+		this.animation=animation;
 	}
 	public boolean none(){
 		if(this.restFrames==0){
@@ -35,5 +41,17 @@ public class Action {
 			}
 		}
 		return null;
+	}
+	public BufferedImage getSprite() {
+		return this.animation.getSprite();
+	}
+	public void restartAnimation() {
+		this.animation.restart();
+	}
+	public void startAnimation() {
+		this.animation.start();
+	}
+	public Animation getAnimation() {
+		return this.animation;
 	}
 }

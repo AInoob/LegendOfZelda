@@ -7,6 +7,14 @@ public class PairDouble {
 		this.x=x;
 		this.y=y;
 	}
+	public boolean equals(Object arg0) {
+		if(arg0 instanceof PairDouble){
+			if(this.x==((PairDouble)arg0).x&&this.y==((PairDouble)arg0).y){
+				return true;
+			}
+		}
+		return false;
+	}
 	public int hashCode	(){
 		int hashCode=0;
 		hashCode+=Double.hashCode(x);
@@ -15,13 +23,5 @@ public class PairDouble {
 	}
 	public String toString(){
 		return "("+x+","+y+")";
-	}
-	public boolean equals(Object arg0) {
-		if(arg0 instanceof PairDouble){
-			if(this.x==((PairDouble)arg0).x&&this.y==((PairDouble)arg0).y){
-				return true;
-			}
-		}
-		return false;
 	}
 }

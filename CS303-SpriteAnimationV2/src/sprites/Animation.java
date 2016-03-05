@@ -17,14 +17,14 @@ import java.util.List;
  */
 public class Animation {
 
+    private int currentFrame;               // animations current frame
     private int frameCount;                 // Counts ticks for change
     private int frameDelay;                 // frame delay 1-12 (You will have to play around with this)
-    private int currentFrame;               // animations current frame
-    private int totalFrames;                // total amount of frames for your animation
+    private List<Frame> frames = new ArrayList<Frame>();    // ArrayList of frames 
 
     private boolean stopped;                // has animations stopped
 
-    private List<Frame> frames = new ArrayList<Frame>();    // ArrayList of frames 
+    private int totalFrames;                // total amount of frames for your animation
 
     public Animation(BufferedImage[] frameArr, int frameDelay) {
         this.frameDelay = frameDelay;
@@ -41,8 +41,37 @@ public class Animation {
 
     }
     
+    private void addFrame(BufferedImage frame, int duration) {
+
+        frames.add(new Frame(frame, duration));
+        currentFrame = 0;
+    }
+
     public int getCurrentFrame(){
     	return this.currentFrame;
+    }
+
+    public BufferedImage getSprite() {
+        return frames.get(currentFrame).getFrame();
+    }
+
+    public boolean isStopped() {
+		return this.stopped;
+	}
+
+    public void reset() {
+        this.stopped = true;
+        this.frameCount = 0;
+        this.currentFrame = 0;
+    }
+
+    public void restart() {
+        if (frames.size() == 0) {
+            return;
+        }
+        stopped = false;
+        currentFrame = 0;
+        this.frameCount=0;
     }
 
     public void start() {
@@ -55,39 +84,19 @@ public class Animation {
         }
         stopped = false;
     }
-
-    public void stop() {
+public void stop() {
         if (frames.size() == 0) {
             return;
         }
         stopped = true;
     }
+    
+    /*public void goNextFrame(){
+    	currentFrame += 1;
+        currentFrame=currentFrame%totalFrames;
+    }*/
 
-    public void restart() {
-        if (frames.size() == 0) {
-            return;
-        }
-        stopped = false;
-        currentFrame = 0;
-        this.frameCount=0;
-    }
-
-    public void reset() {
-        this.stopped = true;
-        this.frameCount = 0;
-        this.currentFrame = 0;
-    }
-
-    private void addFrame(BufferedImage frame, int duration) {
-
-        frames.add(new Frame(frame, duration));
-        currentFrame = 0;
-    }
-
-    public BufferedImage getSprite() {
-        return frames.get(currentFrame).getFrame();
-    }
-//called by the timer
+	//called by the timer
     public void update() {
         if (!stopped) {
             if (frameCount == frameDelay) {
@@ -99,14 +108,5 @@ public class Animation {
         }
 
     }
-    
-    /*public void goNextFrame(){
-    	currentFrame += 1;
-        currentFrame=currentFrame%totalFrames;
-    }*/
-
-	public boolean isStopped() {
-		return this.stopped;
-	}
 
 }

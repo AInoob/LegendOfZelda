@@ -8,14 +8,10 @@ import javax.imageio.ImageIO;
 
 public class SpriteLoader
 {
-    private int tileSize;
-    private BufferedImage spriteSheet;
-    private int rowgap;
     private int colgap;
-    
-    public SpriteLoader(String filename, int tileSize, int rowgap, int colgap) throws IOException {
-        this(new File(filename), tileSize, rowgap, colgap);
-    }
+    private int rowgap;
+    private BufferedImage spriteSheet;
+    private int tileSize;
     
     public SpriteLoader(File file, int tileSize, int rowgap, int colgap) throws IOException {
         this.tileSize=tileSize;
@@ -24,8 +20,8 @@ public class SpriteLoader
         this.spriteSheet=ImageIO.read(file);
     }
     
-    public BufferedImage loadFromLocation(int xcoord, int ycoord, int width, int height) {
-        return spriteSheet.getSubimage(xcoord, ycoord, width, height);
+    public SpriteLoader(String filename, int tileSize, int rowgap, int colgap) throws IOException {
+        this(new File(filename), tileSize, rowgap, colgap);
     }
     
     /**
@@ -43,6 +39,10 @@ public class SpriteLoader
         return spriteSheet.getSubimage(col * tileSize + col*colgap + extraColPixels, 
                 row * tileSize + row*rowgap + extraRowPixels, 
                 tileSize, tileSize);
+    }
+    
+    public BufferedImage loadFromLocation(int xcoord, int ycoord, int width, int height) {
+        return spriteSheet.getSubimage(xcoord, ycoord, width, height);
     }
 
 }
