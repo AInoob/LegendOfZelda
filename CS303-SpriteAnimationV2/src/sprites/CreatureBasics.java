@@ -7,7 +7,9 @@ import java.util.List;
 public class CreatureBasics implements ICreature{
 	private Action action=new Action();
 	protected List<Animation>animationList;
-	protected int facing=1;
+	protected int prevMove;
+	protected int invincableTime=0;
+	private int facing=1;
 	protected int health=1;
     protected double height=1;
     protected int montionDelay,montionDelayCounter;
@@ -146,7 +148,8 @@ public class CreatureBasics implements ICreature{
         return this.action.getSprite();
     }
 	public int getNextMove() {
-		return this.nextMoves.getNextMove();
+		prevMove=this.nextMoves.getNextMove();
+		return prevMove;
 	}
     public double getPosX(){
     	return this.posX;
@@ -283,6 +286,8 @@ public class CreatureBasics implements ICreature{
         this.action.startAnimation();
     }
     public List<Object> update() {
+    	if(this.invincableTime>0)
+    		this.invincableTime--;
         PairDouble aMove=this.action.update();
         if(aMove!=null){
         	this.setPosX(this.getPosX()+aMove.x);
@@ -291,7 +296,7 @@ public class CreatureBasics implements ICreature{
         return null;
     }
 	@Override
-	public void attack() {
+	public void attack(int i) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -311,7 +316,7 @@ public class CreatureBasics implements ICreature{
 	}
 	@Override
 	public boolean invincible() {
-		if(nextMoves.peekNextMove()>3&&nextMoves.peekNextMove()<8){
+		if(this.invincableTime!=0){
 			return true;
 		}
 		return false;
@@ -327,9 +332,8 @@ public class CreatureBasics implements ICreature{
 		return false;
 	}
 	@Override
-	public void setInvincible(boolean invincible) {
-		// TODO Auto-generated method stub
-		
+	public void setInvincible(int invincableTime) {
+		this.invincableTime=invincableTime;
 	}
 	@Override
 	public boolean willBeHitBy(Weapon weapon) {
@@ -346,5 +350,26 @@ public class CreatureBasics implements ICreature{
 	@Override
 	public void getDamage(int damage) {
 		this.health-=damage;
+	}
+	public PairDouble getFacingMagic(){
+		PairDouble r=null;
+		switch(this.facing){
+		case 0:
+			r=new PairDouble(0,-1);
+			break;
+		case 1:
+			r=new PairDouble(0,1);
+			break;
+		case 2:
+			r=new PairDouble(-1,0);
+			break;
+		case 3:
+			r=new PairDouble(1,0);
+			break;
+		}
+		return r;
+	}
+	protected PairDouble getWeaponPosition() {
+		return new PairDouble(this.getPosX()+getFacingMagic().x,this.getPosY()+getFacingMagic().y);
 	}
 }

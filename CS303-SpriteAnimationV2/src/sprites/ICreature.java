@@ -7,7 +7,7 @@ import java.util.List;
  *
  */
 public interface ICreature extends IDisplay{
-	public void attack();
+	public void attack(int i);
 	public void down();
 	public void fallBack();
 	public void fallBack(int direction);
@@ -50,7 +50,7 @@ public interface ICreature extends IDisplay{
 	    */
 	    public boolean readyToAct();
     public void right();
-	public void setInvincible(boolean invincible);
+	public void setInvincible(int invincableTime);
 	/**
 	 * set the next move, called in timer when the next move is set to current move
 	 * @param nextMove 0:up 1:down 2:left 3:right 4:fallUp 5:fallDown 6:fallLeft 7:fallRight

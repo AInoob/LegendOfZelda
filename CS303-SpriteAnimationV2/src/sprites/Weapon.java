@@ -10,6 +10,7 @@ public class Weapon implements IDisplay {
 	private int duration;
 	private List<PairDouble> pointsFromCenter;
 	private ICreature owner;
+	private int facing;
 	/**
 	 * 
 	 * @param action	Action
@@ -19,13 +20,17 @@ public class Weapon implements IDisplay {
 	 * @param pointsFromCenter	PairDouble
 	 * @param owner
 	 */
-	public Weapon(Action action,PairDouble position,int duration,int damage,List<PairDouble>pointsFromCenter,ICreature owner){
+	public Weapon(Action action,int facing,PairDouble position,int duration,int damage,List<PairDouble>pointsFromCenter,ICreature owner){
+		this.facing=facing;
 		this.action=action;
 		this.position=position;
 		this.duration=duration;
 		this.damage=damage;
 		this.pointsFromCenter=pointsFromCenter;
 		this.owner=owner;
+	}
+	public int direction(){
+		return this.facing;
 	}
 	public int getDuration() {
 		return duration;
@@ -55,6 +60,9 @@ public class Weapon implements IDisplay {
 		return 0;
 	}
 	public BufferedImage getImage() {
+		if(this.action==null){
+			return null;
+		}
 		return this.action.getSprite();
 	}
 	@Override
@@ -64,5 +72,14 @@ public class Weapon implements IDisplay {
 	@Override
 	public double getPosY() {
 		return this.position.y;
+	}
+	public void update(){
+		if(this.action!=null){
+			PairDouble aMove=this.action.update();
+	        if(aMove!=null){
+	        	this.position.x=this.getPosX()+aMove.x;
+	            this.position.y=this.getPosY()+aMove.y;
+	        }
+		}
 	}
 }

@@ -33,7 +33,12 @@ public class LinkLoader
     public static final BufferedImage GREEN_UP1=loader.loadFromLocation(59, 0, 16, 16);
     public static final BufferedImage GREEN_UP2=loader.loadFromLocation(60, 30, 16, 16);
     
-    
+    public static final BufferedImage HEART_RED=loader.loadFromLocation(240, 194, 16, 16);
+    public static final BufferedImage HEART_BLUE=loader.loadFromLocation(269, 194, 16, 16);
+    public static final BufferedImage ARROW_UP=loader.loadFromLocation(179, 195, 16, 16);
+    public static final BufferedImage ARROW_DOWN=loader.loadFromLocation(119, 193, 16, 16);
+    public static final BufferedImage ARROW_LEFT=loader.loadFromLocation(150, 194, 16, 16);
+    public static final BufferedImage ARROW_RIGHT=loader.loadFromLocation(208, 194, 16, 16);
     
     
     public static SpriteLoader getLoader() {
