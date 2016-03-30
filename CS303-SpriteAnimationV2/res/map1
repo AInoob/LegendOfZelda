@@ -6,6 +6,6 @@
 1 2 4 4 4 4 4 4 4 2 3 1 3 4 4 4 4 3 0 0
 AInoob
 tele 17 5 map2 0 0
-MonsterA 3 0 5
-MonsterA 10 3 20
-MonsterA 13 3 1
+MonsterA 0 3 0 5
+MonsterA 1 10 3 20
+MonsterA 1 13 3 1

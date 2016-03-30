@@ -23,11 +23,13 @@ To-do: Separate Action class(done)
 To-do: More on animation(kind of, but due to keyPressed, can't be perfect for now)
 To-do: Separate Classes(done for now)
 To-do: monsters(kind of done for now)
-To-do: arrow shoot by link
-To-do: weapon system
-To-do: health system
-To-do: Link attacks and arrows can kill monsters
+To-do: arrow shoot by link(done)
+To-do: weapon system(kind of done for now)
+To-do: health system(kind of done for now)
+To-do: Link attacks and arrows can kill monsters(done)
 To-do: Setting system
 To-do: monsters AI(unnecessary)
 To-do: Dialog system
 To-do: property display
+
+image directionOfWeapon 
